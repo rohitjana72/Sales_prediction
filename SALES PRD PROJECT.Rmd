@@ -1,0 +1,92 @@
+---
+title: "ADVERTISING SALES PREDICTION"
+author: "Rohit Jana"
+date: "2023-10-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Import the advertising sales data
+archive_9_ <- read_csv("C:/Users/Rohit Jana/Downloads/archive (9).zip")
+archive_9_
+```
+```{r}
+df=archive_9_
+```
+
+```{r}
+#check missing values
+colSums(is.na(df))
+#no missing value is there
+```
+
+```{r}
+#summary of data
+summary(df)
+```
+
+```{r}
+#check the dimension of dataset
+dim(df) # 200 rows and 5 columns
+```
+
+```{r}
+# creating a pair plot to visualize the relationship between all columns
+pairs(df)
+cor(df) #correlation matrix
+```
+
+```{r}
+## as we have to predict sales based onn advertisment budget on TV,Radio & Newspaper, so we ##check correlation between variables and sales column. From correlation matrix we easily ##interpreat it
+## 1) High correlation between TV & Sales
+## 2) Moderate correlation between Radio & Sales
+## 3) Very low correlation between Newspaper & Sales
+
+```
+
+```{r}
+# visualize using heatmap
+heatmap(cor(df))
+```
+
+```{r}
+# MULTIPLE LINEAR REGRESSION MODEL
+
+## Multiple linear regression allows us to build a linear relationship between multiple features #to estimate target variables
+## Here our goal to predict sales based on some features
+```
+
+```{r}
+# spliting the data into training and test set
+set.seed(2)
+library(caTools)
+split=sample.split(df,SplitRatio = 0.7)
+split
+train=subset(df,split="TRUE")
+test=subset(df,split="FALSE")
+head(train)
+head(test)
+# create the model
+model=lm(df$`Sales ($)`~.,data = train)
+summary(model)
+#prediction
+pred=predict(model,test)
+pred
+#comparing predicted vs actual values
+plot(test$`Sales ($)`,type="l",col="red")
+lines(pred,type="l",col="blue")
+#finding accuracy
+rmse=sqrt(mean(pred-df$`Sales ($)`)^2)
+rmse
+
+```
+
+```{r}
+# From value of adjusted R-square we can say that 89.51% variation of sales price is explained #by Newspapers,Tv and Radio Ad. And small value of root mean square error(rsme) indicates that #fitted model is good accuracy for predicting the sales price. 
+
+```
+
